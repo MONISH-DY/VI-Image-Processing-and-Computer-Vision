@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASL Real-Time Recognition</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <i class="ph ph-hand-waving brand-icon"></i>
+                <h2>SignSense</h2>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-target="live-section">
+                    <i class="ph ph-camera"></i>
+                    <span>Live Translation</span>
+                </a>
+                <a href="#" class="nav-item" data-target="analytics-section">
+                    <i class="ph ph-chart-bar"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="#" class="nav-item" data-target="settings-section">
+                    <i class="ph ph-gear"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <div class="system-status">
+                <div class="status-indicator"></div>
+                <span>System Online</span>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <div>
+                    <h1 id="view-title">Real-Time ASL Translation</h1>
+                    <p class="subtitle" id="view-subtitle">MediaPipe + SVM Powered Recognition</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-outline" id="switch-algo">
+                        <i class="ph ph-arrows-left-right"></i> Switch Algorithm
+                    </button>
+                    <button class="btn btn-outline" id="toggle-camera">
+                        <i class="ph ph-video-camera-slash"></i> Stop Camera
+                    </button>
+                    <button class="btn btn-primary" id="clear-word">
+                        <i class="ph ph-trash"></i> Clear Word
+                    </button>
+                </div>
+            </header>
+
+            <!-- Live Translation View -->
+            <section id="live-section" class="view-section active">
+                <div class="dashboard-grid">
+                    <!-- Video Stream Section -->
+                    <div class="video-section card glass">
+                        <div class="video-header">
+                            <h3><i class="ph ph-broadcast"></i> Live Feed</h3>
+                            <div class="badge" id="algo-badge">Algorithm {{ active_algo }} Active</div>
+                        </div>
+                        <div class="video-container">
+                            <img id="video-stream" src="{{ url_for('video_feed') }}" alt="Webcam Stream">
+                            <!-- Scanning UI overlay -->
+                            <div class="scan-line"></div>
+                        </div>
+                    </div>
+
+                    <!-- Live Results Section -->
+                    <div class="results-section">
+                        
+                        <div class="card glass prediction-card">
+                            <h3>Current Sign</h3>
+                            <div class="prediction-display">
+                                <span id="predicted-letter" class="letter-main">-</span>
+                            </div>
+                            <div class="confidence-meter">
+                                <div class="confidence-header">
+                                    <span>Confidence</span>
+                                    <span id="confidence-text">0%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="confidence-fill" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card glass word-card">
+                            <h3>Formed Word</h3>
+                            <div class="word-display" id="formed-word">
+                                Waiting for input...
+                            </div>
+                        </div>
+                        
+                        <div class="card glass stats-card">
+                            <div class="stat-row">
+                                <div class="stat-icon"><i class="ph ph-lightning"></i></div>
+                                <div class="stat-info">
+                                    <h4>Latency</h4>
+                                    <span>~30ms</span>
+                                </div>
+                            </div>
+                            <div class="stat-row">
+                                <div class="stat-icon"><i class="ph ph-cpu"></i></div>
+                                <div class="stat-info">
+                                    <h4>Model</h4>
+                                    <span>SVM (RBF Kernel)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics View -->
+            <section id="analytics-section" class="view-section">
+                <div class="analytics-grid">
+                    <div class="card glass stat-card-wide">
+                        <h3>Session Overview</h3>
+                        <div class="stats-overview">
+                            <div class="stat-box">
+                                <span class="stat-label">Total Signs</span>
+                                <span class="stat-value">1,248</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="stat-label">Accuracy Rate</span>
+                                <span class="stat-value">94.2%</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="stat-label">Words Formed</span>
+                                <span class="stat-value">86</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card glass">
+                        <h3>Recognition History</h3>
+                        <div class="history-list">
+                            <div class="history-item"><span>HELLO</span><span class="badge">98%</span></div>
+                            <div class="history-item"><span>SIGN</span><span class="badge">92%</span></div>
+                            <div class="history-item"><span>LANGUAGE</span><span class="badge">89%</span></div>
+                        </div>
+                    </div>
+
+                    <div class="card glass">
+                        <h3>Top Signs Identified</h3>
+                        <div class="bar-chart">
+                            <div class="bar-row"><span>A</span><div class="bar"><div class="fill" style="width: 90%;"></div></div></div>
+                            <div class="bar-row"><span>B</span><div class="bar"><div class="fill" style="width: 75%;"></div></div></div>
+                            <div class="bar-row"><span>C</span><div class="bar"><div class="fill" style="width: 60%;"></div></div></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings View -->
+            <section id="settings-section" class="view-section">
+                <div class="settings-container">
+                    <div class="card glass settings-card">
+                        <h3>Configuration</h3>
+                        <div class="settings-list">
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>Confidence Threshold</h4>
+                                    <p>Minimum probability to register a sign</p>
+                                </div>
+                                <input type="range" min="10" max="95" value="70">
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>Stability Frames</h4>
+                                    <p>Frames required for consistent prediction</p>
+                                </div>
+                                <input type="number" value="7" style="width: 60px;">
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>Visual Feedback</h4>
+                                    <p>Show scan line and hand landmarks</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
